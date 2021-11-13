@@ -1,0 +1,7 @@
+	valgrind --leak-check=full -v ./$(NAME) map/1line.ber
+	valgrind --leak-check=full -v ./$(NAME) map/error1col.ber
+	valgrind --leak-check=full -v ./$(NAME) map/errorlastline.ber
+	valgrind --leak-check=full -v ./$(NAME) map/errorlastlineborder.ber
+	valgrind --leak-check=full -v ./$(NAME) map/errormidlineborder.ber
+	valgrind --leak-check=full -v ./$(NAME) map/invalidchar.ber
+	valgrind --leak-check=full -v ./$(NAME) map/map.ber

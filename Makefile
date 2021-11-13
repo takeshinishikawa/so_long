@@ -17,13 +17,13 @@ RM =	rm -f
 all:	$(OBJ)
 
 $(OBJ): $(SRC) $(LIBFT) $(MLX)
-	gcc $(CFLAGS) $(SRC) $(LIBFT) $(MLXFLAGS) -o $(NAME)
+	gcc $(CFLAGS) $(SRC) $(LIBFT) $(MLX) $(MLXFLAGS) -o $(NAME)
 
 $(LIBFT):
 	make -C libs/libft
 
 run:
-	valgrind --leak-check=full ./$(NAME) map/invalidchar.ber
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(NAME) map/minimalmap.ber
 
 clean:
 	$(RM) $(OBJ)
