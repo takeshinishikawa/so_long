@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/05 12:08:20 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/13 12:16:49 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/13 21:01:33 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ typedef struct s_game
 	int		valid_map;
 	size_t	line_len;
 	size_t	line_number;
-	int		x;
-	int		y;
+	int		p_x;
+	int		p_y;
 
 	t_img	*empty;
 	t_img	*player;

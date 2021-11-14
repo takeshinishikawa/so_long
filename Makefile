@@ -23,7 +23,7 @@ $(LIBFT):
 	make -C libs/libft
 
 run:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(NAME) map/minimalmap.ber
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(NAME) map/map.ber
 
 clean:
 	$(RM) $(OBJ)

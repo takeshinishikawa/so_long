@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/13 15:28:40 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/14 18:03:53 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,6 @@ void	init_img(t_game *game)
 	load_img(game, &game->opened_exit, "./img/exit_opened.xpm");
 }
 
-
 void	game_default(t_game *game)
 {
 	game->moves = 0;
@@ -302,30 +301,139 @@ void	print_map(t_game *game)
 	size_t	line;
 	size_t	full_line;
 
-	game->x = -50;
-	game->y = 0;
-	while (game->y < (int)game->line_number)
+	game->p_x = -50;
+	game->p_y = 0;
+	while (game->p_y < (int)game->line_number)
 	{
 		line = 0;
-		full_line = game->line_len * game->y;
+		full_line = game->line_len * game->p_y;
 		while (line < game->line_len)
 		{
-			print_img(game, game->map[line + full_line], game->x += 50, game->y * 49);
+			print_img(game, game->map[line + full_line], game->p_x += 50, game->p_y * 49);
 			line++;
 		}
-		game->y++;
+		game->p_y++;
 	}
 	mlx_put_image_to_window(game->mlx, game->win, game->mlx_img, 0, 0);
 }
 
-int	check_key(int key, char *str)
+
+void	erase_images(t_game *game)
 {
-	//Printa o argumento passado na mlx_key_hook
-	printf("%s\n", str);
-	printf("%c\n", key);
-	if (key == 'p')
-		exit(1);
+	mlx_destroy_image(game->mlx, game->empty);
+	mlx_destroy_image(game->mlx, game->player);
+	mlx_destroy_image(game->mlx, game->collectible);
+	mlx_destroy_image(game->mlx, game->wall);
+	mlx_destroy_image(game->mlx, game->closed_exit);
+	mlx_destroy_image(game->mlx, game->opened_exit);
+	mlx_destroy_image(game->mlx, game->mlx_img);
 }
+
+int	close_game(t_game *game)
+{
+	free(game->map);
+	erase_images(game);
+	mlx_destroy_window(game->mlx, game->win);
+	mlx_destroy_display(game->mlx);
+	free(game->mlx);
+	exit(1);
+}
+
+int	min_window(t_game *game)
+{
+	print_map(game);
+	return (1);
+}
+
+void	find_p_position(t_game *game)
+{
+	unsigned int	line;
+	unsigned int	full_line;
+
+	full_line = 0;
+	while (full_line < game->line_number)
+	{
+		line = 0;
+		while (line < game->line_len)
+		{
+			if (game->map[line + full_line * game->line_len] == 'P')
+				break;
+			line++;
+		}
+		if (game->map[line + full_line * game->line_len] == 'P')
+			break;
+		full_line++;
+	}
+	game->p_x = line;
+	ft_printf("%u\n", game->p_x);//remove
+	game->p_y = full_line;
+	ft_printf("%u\n", game->p_y);//remove
+}
+
+//movements.c
+
+int		validate_move(char c, t_game *game)
+{
+	if (c == '1')
+	{
+		ft_printf("Cannot move into a wall.\n");
+		return (1);
+	}
+	else if (c == 'E' && game->collectible_nbr)
+	{
+		ft_printf("Exit is closed, you must get all collectables.\n");
+		return (1);
+	}
+	return (0);
+}
+
+void	move_up(t_game *game, int x, int y)
+{
+	if (validate_move(game->map[x + (y - 1) * game->line_len], game) == 1)
+		return ;
+	else if (game->map[x + (y - 1) * game->line_len] == 'E' && !game->collectible_nbr)
+	{
+		game->map[x + (y - 1) * game->line_len] = 'P';
+		game->map[x + y * game->line_len] = '0';
+		close_game(game);
+	}
+	else if (game->map[x + (y - 1) * game->line_len] == 'C')
+	{
+		ft_printf("Is a collectable.\n");//remove
+		game->collectible_nbr--;
+		//game->p_y--;
+	}
+	game->map[x + (y - 1) * game->line_len] = 'P';
+	game->map[x + y * game->line_len] = '0';
+	mlx_destroy_image(game->mlx, game->player);
+	load_img(game, &game->player, "./img/p_up.xpm");
+	game->moves++;
+	ft_printf("Number of movements: %i\n", game->moves);
+}
+
+int	check_key(int key, t_game *game)
+{
+	find_p_position(game);
+	ft_printf("%i\n", key);
+	ft_printf("%s\n", game->map);
+	ft_printf("px eh %u\n", game->p_x);
+	ft_printf("py eh %u\n", game->p_y);
+	//Prints according to key_input
+	printf("%c\n", key);
+	if (key == 'a')
+		ft_printf("LEFT\n");
+	if (key == 's')
+		ft_printf("DOWN\n");
+	if (key == 'd')
+		ft_printf("RIGHT\n");
+	if (key == 'w')
+		move_up(game, game->p_x, game->p_y);
+	if (key == 65307)
+		close_game(game);
+	print_map(game);
+	return (1);
+}
+
 
 int	main(int argc, char **argv)
 {
@@ -341,6 +449,9 @@ int	main(int argc, char **argv)
 		free(game.map);
 	print_map(&game);
 	mlx_key_hook(game.win, check_key, &game);
-
+	mlx_hook(game.win, 33, 1L << 5, close_game, &game);
+	mlx_hook(game.win, 15, 1L << 16, min_window, &game);
 	mlx_loop(game.mlx);
+	mlx_destroy_display(game.mlx);
+	free(game.mlx);
 }
