@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:22:33 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 12:17:40 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,10 @@ void	init_game_struct(t_game *game)
 			game->collectible_nbr++;
 		if (game->map[needle] == EXIT)
 			game->exit_nbr++;
+	}
+	if (game->player_nbr > 1)
+	{
+		ft_printf("Error\nMap has more than 1 player.\n");
+		close_game(game);
 	}
 }

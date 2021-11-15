@@ -6,13 +6,13 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:22:12 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 00:13:00 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/so_long.h"
 
-int get_map(t_game *game, char *argv)
+int	get_map(t_game *game, char *argv)
 {
 	char	*line;
 	int		gnl_status;

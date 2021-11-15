@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/15 11:58:49 by rtakeshi          #+#    #+#             */
+/*   Updated: 2021/11/15 12:00:15 by rtakeshi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-int ft_transfer_line(char **read_content, char **line)
+int	ft_transfer_line(char **read_content, char **line)
 {
-	size_t i;
-	char *aux;
+	size_t	i;
+	char	*aux;
 
 	i = ft_linelen_gnl(*read_content);
 	if ((*read_content)[i] == '\0')
@@ -20,9 +32,9 @@ int ft_transfer_line(char **read_content, char **line)
 	return (1);
 }
 
-static int found_line(char *read_content)
+static int	found_line(char *read_content)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (read_content == NULL)
@@ -36,12 +48,12 @@ static int found_line(char *read_content)
 	return (0);
 }
 
-static void ft_cpy_content(char **read_content, char *buffer)
+static void	ft_cpy_content(char **read_content, char *buffer)
 {
-	char *aux;
+	char	*aux;
 
 	if (!*read_content && !buffer)
-		return;
+		return ;
 	else if (!*read_content && buffer)
 		*read_content = ft_strdup_gnl(buffer);
 	else
@@ -50,14 +62,14 @@ static void ft_cpy_content(char **read_content, char *buffer)
 		free(*read_content);
 		*read_content = aux;
 	}
-	return;
+	return ;
 }
 
-int get_next_line(int fd, char **line)
+int	get_next_line(int fd, char **line)
 {
-	static char *read_content;
-	int char_read;
-	char *buffer;
+	static char	*read_content;
+	int			char_read;
+	char		*buffer;
 
 	if (line == NULL || fd < 0 || BUFFER_SIZE <= 0)
 		return (-1);

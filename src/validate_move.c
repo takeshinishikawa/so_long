@@ -6,13 +6,13 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:24:29 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 00:10:44 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/so_long.h"
 
-int		validate_move(char c, t_game *game)
+int	validate_move(char c, t_game *game)
 {
 	if (c == WALL)
 	{

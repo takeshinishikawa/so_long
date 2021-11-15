@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/15 12:01:18 by rtakeshi          #+#    #+#             */
+/*   Updated: 2021/11/15 12:01:35 by rtakeshi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 size_t	ft_strlen_gnl(const char*s)
@@ -20,7 +32,8 @@ char	*ft_strjoin_gnl(char const *s1, char const *s2)
 	s2_len = 0;
 	if (!s1 || !s2)
 		return (NULL);
-	strjoin = malloc((ft_strlen_gnl(s1) + ft_strlen_gnl(s2) + 1) * sizeof(char));
+	strjoin = malloc((ft_strlen_gnl(s1) + ft_strlen_gnl(s2) + 1) \
+		* sizeof(char));
 	if (strjoin == NULL)
 		return (NULL);
 	while (s1[s1_len])

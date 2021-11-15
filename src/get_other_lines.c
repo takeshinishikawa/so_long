@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:22:25 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 00:10:02 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	get_other_lines(char **line, int *gnl_status, t_game *game)
 		*gnl_status = get_next_line(game->fd, line);
 		if (*gnl_status == 0)
 		{
-			game->valid_map = check_wall_line((game->map + ft_strlen(game->map) - game->line_len), game->line_len);
+			game->valid_map = check_wall_line((game->map + \
+			ft_strlen(game->map) - game->line_len), game->line_len);
 			if (game->valid_map == 0)
 				check_last_line(line, game);
 			free (*line);

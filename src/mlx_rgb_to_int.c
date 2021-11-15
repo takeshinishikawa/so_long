@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:23:56 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 00:13:59 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,5 @@
 
 unsigned int	mlx_rgb_to_int(int o, int r, int g, int b)
 {
-	return(o << 24 | r << 16 | g << 8 | b);
+	return (o << 24 | r << 16 | g << 8 | b);
 }

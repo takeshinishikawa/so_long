@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/05 12:04:11 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/09/05 12:04:14 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 12:00:53 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	ft_atoi(const char *str)
 		if (num * signal >= LONG_MAX / 10 && (*str - '0') > LONG_MAX % 10)
 			return ((int)LONG_MAX);
 		else if (num * signal <= LONG_MIN / 10
-			 && (*str - '0') > -(LONG_MIN % 10))
+			&& (*str - '0') > -(LONG_MIN % 10))
 			return ((int)LONG_MIN);
 		num = (num * 10) + (*str - '0');
 		str++;

@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 23:20:59 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/15 12:50:52 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,13 @@ int	check_map(int argc, char **argv)
 
 	if (argc != 2)
 	{
-		ft_printf("Error\nPlease inform only one map /folder/name.\n");
+		ft_printf("Error\nPlease inform only ./so_long 'map_file'.\n");
 		return (-1);
 	}
 	argv_len = ft_strlen(argv[1]);
 	if (ft_strncmp((argv[1] + argv_len - 4), ".ber", 4) != 0)
 	{
-		ft_printf("Error\nPlease inform only maps with '.ber' extension.\n");
-		return (-1);
-	}
-	if (ft_strlen(argv[1] + 4) < 5)
-	{
-		ft_printf("Error\nPlease inform a valid map.\n");
+		ft_printf("Error\nGame accepts only maps with '.ber' extension.\n");
 		return (-1);
 	}
 	return (0);
