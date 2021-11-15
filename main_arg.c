@@ -6,7 +6,7 @@
 /*   By: rtakeshi <rtakeshi@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:07:51 by rtakeshi          #+#    #+#             */
-/*   Updated: 2021/11/14 18:03:53 by rtakeshi         ###   ########.fr       */
+/*   Updated: 2021/11/14 22:01:06 by rtakeshi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	check_wall_line(char *line, size_t len)
 	needle = 0;
 	while (needle < len)
 	{
-		if (line[needle] == '1')
+		if (line[needle] == WALL)
 			needle++;
 		else
 			return (0);
@@ -30,7 +30,7 @@ int	check_wall_line(char *line, size_t len)
 //check if line limits is a Wall
 int	check_mid_line(char *line, size_t len)
 {
-	if (line[0] == '1' && line[len - 1] == '1')
+	if (line[0] == WALL && line[len - 1] == WALL)
 		return (1);
 	ft_printf("Error\nA wall is missing at the edges.\n");
 	return (0);
@@ -50,8 +50,9 @@ int	parse_map(char *map)
 	needle = 0;
 	while (map[needle])
 	{
-		if (map[needle] != '0' && map[needle] != '1' && map[needle] != 'C'\
-		 && map[needle] != 'E' && map[needle] != 'P')
+		if (map[needle] != EXIT && map[needle] != WALL && \
+		map[needle] != COLLECTIBLE && map[needle] != EMPTY \
+		&& map[needle] != PLAYER)
 			return (1);
 		needle++;
 	}
@@ -116,12 +117,10 @@ void	check_last_line(char **line, t_game *game)
 //check other lines and include in game->map
 void	get_other_lines(char **line, int *gnl_status, t_game *game)
 {
-	int	valid_map;
-
 	while (*gnl_status > 0)
 	{
 		game->line_number++;
-		valid_map = check_mid_line(*line, game->line_len);
+		game->valid_map = check_mid_line(*line, game->line_len);
 		check_line_len(*line, game);
 		ft_strcat(game->map, *line);
 		free (*line);
@@ -129,8 +128,8 @@ void	get_other_lines(char **line, int *gnl_status, t_game *game)
 		*gnl_status = get_next_line(game->fd, line);
 		if (*gnl_status == 0)
 		{
-			valid_map = check_wall_line((game->map + ft_strlen(game->map) - game->line_len), game->line_len);
-			if (valid_map == 0)
+			game->valid_map = check_wall_line((game->map + ft_strlen(game->map) - game->line_len), game->line_len);
+			if (game->valid_map == 0)
 				check_last_line(line, game);
 			free (*line);
 		}
@@ -144,6 +143,7 @@ void	check_min_config(t_game *game)
 	{
 		ft_printf("Error\nValid map must have at least 4 lines/columns.\n");
 		game->valid_map = 0;
+		return ;
 	}
 	if (parse_map(game->map) == 1)
 	{
@@ -167,12 +167,12 @@ void	load_img(t_game *game, t_img **img, char *path)
 
 void	init_img(t_game *game)
 {
-	load_img(game, &game->empty, "./img/empty.xpm");
-	load_img(game, &game->player, "./img/p_start.xpm");
-	load_img(game, &game->collectible, "./img/collectible.xpm");
-	load_img(game, &game->wall, "./img/wall.xpm");
-	load_img(game, &game->closed_exit, "./img/exit_closed.xpm");
-	load_img(game, &game->opened_exit, "./img/exit_opened.xpm");
+	load_img(game, &game->empty, PATH_0);
+	load_img(game, &game->player, PATH_P_START);
+	load_img(game, &game->collectible, PATH_C);
+	load_img(game, &game->wall, PATH_1);
+	load_img(game, &game->closed_exit, PATH_E_CLOSED);
+	load_img(game, &game->opened_exit, PATH_E_OPENED);
 }
 
 void	game_default(t_game *game)
@@ -183,7 +183,7 @@ void	game_default(t_game *game)
 	game->collectible_nbr = 0;
 	//include here mlx pointer inits
 	game->mlx = mlx_init();
-	game->win = mlx_new_window(game->mlx, game->map_width, game->map_height, "SO_LONG");
+	game->win = mlx_new_window(game->mlx, game->map_width, game->map_height, WINDOW_NAME);
 	game->mlx_img = mlx_new_image(game->mlx, game->map_width, game->map_height);
 	init_img(game);
 }
@@ -197,11 +197,11 @@ void	init_game_struct(t_game *game)
 	game_default(game);
 	while (game->map[needle++])
 	{
-		if (game->map[needle] == 'P')
+		if (game->map[needle] == PLAYER)
 			game->player_nbr++;
-		if (game->map[needle] == 'C')
+		if (game->map[needle] == COLLECTIBLE)
 			game->collectible_nbr++;
-		if (game->map[needle] == 'E')
+		if (game->map[needle] == EXIT)
 			game->exit_nbr++;
 	}
 }
@@ -219,22 +219,10 @@ int get_map(t_game *game, char *argv)
 	gnl_status = 0;
 	game->valid_map = get_first_line(&line, &gnl_status, game);
 	get_other_lines(&line, &gnl_status, game);
-	check_min_config(game);
-	/*VALIDATE QTT OF LINE/COLUMNS AT LEAST 4X4
-	if (game->line_len < 4 || game->line_number < 4)
-		ft_printf("Valid map must have at least 4 lines/columns.\n");*/
-	/*VALIDATE CENTER*/
-	//0 IS EMPTY SPACE
-	//1 WALL
-	//C COLLECTIBLE
-	//E MAP EXIT
-	//P PLAYER
-	/*if (parse_map(game->map) == 1)
-		ft_printf("Valid map must be composed by 0, 1, C, E and P.\n");*/
-
-	//AT LEAST 1 C
-	//AT LEAST 1 E
-	//AT LEAST 1 P
+	if (game->valid_map)
+		check_min_config(game);
+	else
+		ft_printf("Error\nInvalid map, please check it.\n");
 	close(game->fd);
 	return (0);
 }
@@ -282,17 +270,17 @@ void	draw_image(t_game *game, t_img *img, size_t line, size_t col)
 
 void	print_img(t_game *game, char element, size_t line, size_t col)
 {
-	if (element == 'P')
+	if (element == PLAYER)
 		draw_image(game, game->player, line, col);
-	if (element == 'C')
+	if (element == COLLECTIBLE)
 		draw_image(game, game->collectible, line, col);
-	if (element == '0')
+	if (element == EMPTY)
 		draw_image(game, game->empty, line, col);
-	if (element == '1')
+	if (element == WALL)
 		draw_image(game, game->wall, line, col);
-	if (element == 'E' && game->collectible_nbr)
+	if (element == EXIT && game->collectible_nbr)
 		draw_image(game, game->closed_exit, line, col);
-	if (element == 'E' && !game->collectible_nbr)
+	if (element == EXIT && !game->collectible_nbr)
 		draw_image(game, game->opened_exit, line, col);
 }
 
@@ -356,30 +344,28 @@ void	find_p_position(t_game *game)
 		line = 0;
 		while (line < game->line_len)
 		{
-			if (game->map[line + full_line * game->line_len] == 'P')
+			if (game->map[line + full_line * game->line_len] == PLAYER)
 				break;
 			line++;
 		}
-		if (game->map[line + full_line * game->line_len] == 'P')
+		if (game->map[line + full_line * game->line_len] == PLAYER)
 			break;
 		full_line++;
 	}
 	game->p_x = line;
-	ft_printf("%u\n", game->p_x);//remove
 	game->p_y = full_line;
-	ft_printf("%u\n", game->p_y);//remove
 }
 
 //movements.c
 
 int		validate_move(char c, t_game *game)
 {
-	if (c == '1')
+	if (c == WALL)
 	{
 		ft_printf("Cannot move into a wall.\n");
 		return (1);
 	}
-	else if (c == 'E' && game->collectible_nbr)
+	else if (c == EXIT && game->collectible_nbr)
 	{
 		ft_printf("Exit is closed, you must get all collectables.\n");
 		return (1);
@@ -387,48 +373,56 @@ int		validate_move(char c, t_game *game)
 	return (0);
 }
 
-void	move_up(t_game *game, int x, int y)
+void	refresh_map(t_game *game, int x, int y)
 {
-	if (validate_move(game->map[x + (y - 1) * game->line_len], game) == 1)
-		return ;
-	else if (game->map[x + (y - 1) * game->line_len] == 'E' && !game->collectible_nbr)
-	{
-		game->map[x + (y - 1) * game->line_len] = 'P';
-		game->map[x + y * game->line_len] = '0';
-		close_game(game);
-	}
-	else if (game->map[x + (y - 1) * game->line_len] == 'C')
-	{
-		ft_printf("Is a collectable.\n");//remove
-		game->collectible_nbr--;
-		//game->p_y--;
-	}
-	game->map[x + (y - 1) * game->line_len] = 'P';
-	game->map[x + y * game->line_len] = '0';
-	mlx_destroy_image(game->mlx, game->player);
-	load_img(game, &game->player, "./img/p_up.xpm");
+	game->map[game->p_x + x + (game->p_y + y) * game->line_len] = PLAYER;
+	game->map[game->p_x + game->p_y * game->line_len] = EMPTY;
 	game->moves++;
 	ft_printf("Number of movements: %i\n", game->moves);
 }
 
+void	refresh_p_img(t_game *game, char *address)
+{
+	mlx_destroy_image(game->mlx, game->player);
+	load_img(game, &game->player, address);
+}
+
+void	move(t_game *game, int x, int y, char *path1, char *path2)
+{
+	char	target;
+
+	refresh_p_img(game, path1);
+	print_map(game);
+	find_p_position(game);
+	target = game->map[game->p_x + x + (game->p_y + y) * game->line_len];
+	if (validate_move(target, game) == 1)
+		return ;
+	else if (target == EXIT && !game->collectible_nbr)
+	{
+		ft_printf("You found the exit.\n");
+		refresh_map(game, x, y);
+		close_game(game);
+	}
+	else if (target == COLLECTIBLE)
+	{
+		ft_printf("Got a collectable.\n");
+		game->collectible_nbr--;
+	}
+	refresh_map(game, x, y);
+	refresh_p_img(game, path2);
+}
+
 int	check_key(int key, t_game *game)
 {
-	find_p_position(game);
-	ft_printf("%i\n", key);
-	ft_printf("%s\n", game->map);
-	ft_printf("px eh %u\n", game->p_x);
-	ft_printf("py eh %u\n", game->p_y);
-	//Prints according to key_input
-	printf("%c\n", key);
-	if (key == 'a')
-		ft_printf("LEFT\n");
-	if (key == 's')
-		ft_printf("DOWN\n");
-	if (key == 'd')
-		ft_printf("RIGHT\n");
-	if (key == 'w')
-		move_up(game, game->p_x, game->p_y);
-	if (key == 65307)
+	if (key == LEFT)
+		move(game, -1, 0, PATH_P_A1, PATH_P_A2);
+	if (key == DOWN)
+		move(game, 0, +1, PATH_P_S1, PATH_P_S2);
+	if (key == RIGHT)
+		move(game, +1, 0, PATH_P_D1, PATH_P_D2);
+	if (key == UP)
+		move(game, 0, -1, PATH_P_W1, PATH_P_W2);
+	if (key == ESC)
 		close_game(game);
 	print_map(game);
 	return (1);
@@ -442,11 +436,14 @@ int	main(int argc, char **argv)
 	if (check_map(argc, argv) != 0)
 		return (-1);
 	if (get_map(&game, argv[1]) != 0)
-		return (-1);
+		exit (1);
 	if (game.valid_map)
 		init_game_struct(&game);
 	else
+	{
 		free(game.map);
+		exit(1);
+	}
 	print_map(&game);
 	mlx_key_hook(game.win, check_key, &game);
 	mlx_hook(game.win, 33, 1L << 5, close_game, &game);
